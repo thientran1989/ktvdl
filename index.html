@@ -97,9 +97,15 @@
 
     if (base64Data) {
         try {
-            // 1. Giải mã Base64 thành mảng byte (Uint8Array)
-            // Thay thế ký tự URL-safe về lại dạng Base64 chuẩn trước khi decode
-            const base64 = base64Data.replace(/-/g, '+').replace(/_/g, '/');
+            // 1. Khôi phục ký tự URL-safe về Base64 chuẩn
+            let base64 = base64Data.replace(/-/g, '+').replace(/_/g, '/');
+            
+            // 🔥 QUAN TRỌNG: Bù lại các dấu '=' bị thiếu do .withoutPadding() trong Java
+            while (base64.length % 4) {
+                base64 += '=';
+            }
+
+            // 2. Giải mã Base64 sang chuỗi nhị phân (Binary String)
             const binaryString = atob(base64);
             const len = binaryString.length;
             const bytes = new Uint8Array(len);
@@ -107,16 +113,16 @@
                 bytes[i] = binaryString.charCodeAt(i);
             }
 
-            // 2. Sử dụng Pako để giải nén GZIP về chuỗi UTF-8 nguyên bản
+            // 3. Sử dụng Pako để giải nén GZIP về chuỗi UTF-8 nguyên bản
             const jsonString = pako.ungzip(bytes, { to: 'string' });
             const data = JSON.parse(jsonString);
 
-            // 3. Đổ dữ liệu ra giao diện
-            document.getElementById('id').innerText   = data.ma_nv || "Chưa cập nhật";
-            document.getElementById('n').innerText  = data.ten || "Chưa cập nhật";
-            document.getElementById('y').innerText = data.nam_sinh || "Chưa cập nhật";
-            document.getElementById('idCard').innerText    = data.cccd || "Chưa cập nhật";
+            // 4. Đổ dữ liệu ra giao diện (Đã sửa khớp với ID của HTML)
+            document.getElementById('fullName').innerText  = data.ten || "Chưa cập nhật";
             document.getElementById('position').innerText  = data.chuc_vu || "Nhân viên";
+            document.getElementById('empCode').innerText   = data.ma_nv || "Chưa cập nhật";
+            document.getElementById('birthYear').innerText = data.nam_sinh || "Chưa cập nhật";
+            document.getElementById('idCard').innerText    = data.cccd || "Chưa cập nhật";
             document.getElementById('workplace').innerText = data.noi_cong_tac || "Chưa cập nhật";
 
         } catch (e) {
