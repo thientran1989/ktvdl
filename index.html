@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thẻ Nhân Viên Điện Tử</title>
+    <!-- Sử dụng Tailwind CSS để thiết kế giao diện hiện đại -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Thêm thư viện icon cho giao diện sinh động -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-900 flex items-center justify-center min-h-screen p-4 antialiased">
+
+    <!-- Khung Card thông tin nhân viên -->
+    <div class="bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-sm transform transition-all border border-slate-100">
+        
+        <!-- Phần Header của Card (Màu sắc chủ đạo) -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 text-center relative">
+            <!-- Icon Avatar giả lập -->
+            <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-white/50 shadow-inner">
+                <i class="fa-solid fa-user-tie text-white text-3xl"></i>
+            </div>
+            <!-- Tên và Chức vụ chính -->
+            <h2 id="fullName" class="text-xl font-bold text-white tracking-wide">Đang tải...</h2>
+            <p id="position" class="text-blue-100 text-xs font-medium uppercase tracking-wider mt-1">Đang tải...</p>
+        </div>
+
+        <!-- Phần thân hiển thị chi tiết thông tin -->
+        <div class="p-6 space-y-4 bg-slate-50/50">
+            
+            <!-- Mã nhân viên -->
+            <div class="flex items-center space-x-3 bg-white p-3 rounded-xl shadow-xs border border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                    <i class="fa-solid fa-id-card-clip text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Mã nhân viên</p>
+                    <p id="empCode" class="text-sm font-bold text-slate-700">-</p>
+                </div>
+            </div>
+
+            <!-- Năm sinh -->
+            <div class="flex items-center space-x-3 bg-white p-3 rounded-xl shadow-xs border border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
+                    <i class="fa-solid fa-cake-candles text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Năm sinh</p>
+                    <p id="birthYear" class="text-sm font-semibold text-slate-700">-</p>
+                </div>
+            </div>
+
+            <!-- Số CCCD -->
+            <div class="flex items-center space-x-3 bg-white p-3 rounded-xl shadow-xs border border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
+                    <i class="fa-solid fa-id-card text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Số CCCD</p>
+                    <p id="idCard" class="text-sm font-semibold text-slate-700 tracking-wide">-</p>
+                </div>
+            </div>
+
+            <!-- Nơi công tác -->
+            <div class="flex items-center space-x-3 bg-white p-3 rounded-xl shadow-xs border border-slate-100">
+                <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <i class="fa-solid fa-location-dot text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Nơi công tác</p>
+                    <p id="workplace" class="text-sm font-semibold text-slate-700">-</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Nút đóng nhanh -->
+        <div class="p-4 bg-white border-t border-slate-100 flex justify-center">
+            <button onclick="handleClose()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-3 rounded-xl transition-all shadow-md active:scale-98 flex items-center justify-center space-x-2 text-sm cursor-pointer">
+                <i class="fa-solid fa-circle-xmark"></i>
+                <span>Đóng thông tin</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Script xử lý bóc tách JSON nhận từ QR -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
+<script>
+    function handleClose() {
+        if (window.opener || window.history.length === 1) { window.close(); } 
+        else { window.history.back(); }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const base64Data = urlParams.get('data');
+
+    if (base64Data) {
+        try {
+            // 1. Giải mã Base64 thành mảng byte (Uint8Array)
+            // Thay thế ký tự URL-safe về lại dạng Base64 chuẩn trước khi decode
+            const base64 = base64Data.replace(/-/g, '+').replace(/_/g, '/');
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+
+            // 2. Sử dụng Pako để giải nén GZIP về chuỗi UTF-8 nguyên bản
+            const jsonString = pako.ungzip(bytes, { to: 'string' });
+            const data = JSON.parse(jsonString);
+
+            // 3. Đổ dữ liệu ra giao diện
+            document.getElementById('id').innerText   = data.ma_nv || "Chưa cập nhật";
+            document.getElementById('n').innerText  = data.ten || "Chưa cập nhật";
+            document.getElementById('y').innerText = data.nam_sinh || "Chưa cập nhật";
+            document.getElementById('idCard').innerText    = data.cccd || "Chưa cập nhật";
+            document.getElementById('position').innerText  = data.chuc_vu || "Nhân viên";
+            document.getElementById('workplace').innerText = data.noi_cong_tac || "Chưa cập nhật";
+
+        } catch (e) {
+            console.error("Lỗi giải nén hoặc parse:", e);
+            document.getElementById('fullName').innerText = "Lỗi dữ liệu mã QR!";
+        }
+    }
+</script>
+</body>
+</html>
