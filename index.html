@@ -118,12 +118,10 @@
             const data = JSON.parse(jsonString);
 
             // 4. Đổ dữ liệu ra giao diện (Đã sửa khớp với ID của HTML)
-            document.getElementById('fullName').innerText  = data.ten || "Chưa cập nhật";
-            document.getElementById('position').innerText  = data.chuc_vu || "Nhân viên";
-            document.getElementById('empCode').innerText   = data.ma_nv || "Chưa cập nhật";
-            document.getElementById('birthYear').innerText = data.nam_sinh || "Chưa cập nhật";
-            document.getElementById('idCard').innerText    = data.cccd || "Chưa cập nhật";
-            document.getElementById('workplace').innerText = data.noi_cong_tac || "Chưa cập nhật";
+            document.getElementById('n').innerText  = data.ten || "Chưa cập nhật";
+            document.getElementById('m').innerText   = data.ma_nv || "Chưa cập nhật";
+            document.getElementById('y').innerText = data.nam_sinh || "Chưa cập nhật";
+            document.getElementById('id').innerText    = data.cccd || "Chưa cập nhật";
 
         } catch (e) {
             console.error("Lỗi giải nén hoặc parse:", e);
