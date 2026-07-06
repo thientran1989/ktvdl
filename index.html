@@ -118,10 +118,13 @@
             const data = JSON.parse(jsonString);
 
             // 4. Đổ dữ liệu ra giao diện (Đã sửa khớp với ID của HTML)
-            document.getElementById('n').innerText  = data.ten || "Chưa cập nhật";
-            document.getElementById('m').innerText   = data.ma_nv || "Chưa cập nhật";
-            document.getElementById('y').innerText = data.nam_sinh || "Chưa cập nhật";
-            document.getElementById('id').innerText    = data.cccd || "Chưa cập nhật";
+           // 4. Đổ dữ liệu ra giao diện (Đã sửa lại khớp chính xác với JSON mới của bạn)
+document.getElementById('fullName').innerText  = data.n || "Chưa cập nhật"; // data.n là "Trần Văn A"
+document.getElementById('position').innerText  = data.p || "Nhân viên";    // data.p là "Nhân viên"
+document.getElementById('empCode').innerText   = data.m || "Chưa cập nhật"; // data.m là "NV001"
+document.getElementById('birthYear').innerText = data.y || "Chưa cập nhật"; // data.y là 1990
+document.getElementById('idCard').innerText    = data.c || "Chưa cập nhật"; // data.c là "123456789"
+document.getElementById('workplace').innerText = data.w || "Chưa cập nhật"; // data.w là "Hà Nội"
 
         } catch (e) {
             console.error("Lỗi giải nén hoặc parse:", e);
